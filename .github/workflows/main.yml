@@ -1,10 +1,10 @@
-name: PlatformIO CI
+name: PlatformIO Release Build
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    tags:
+      - 'v*'
+  workflow_dispatch:
 
 jobs:
   build:
@@ -41,11 +41,15 @@ jobs:
       - name: Build firmware
         run: pio run
 
-      - name: Show firmware size
-        run: pio run -t size
+      - name: Rename firmware
+        run: |
+          mkdir output
+          find .pio/build -name "firmware.bin" -exec bash -c 'cp "$0" "output/${0##*/}"' {} \;
+          ls -lh output
 
-      - name: Upload firmware artifact
-        uses: actions/upload-artifact@v4
+      - name: Create GitHub release and upload firmware
+        uses: softprops/action-gh-release@v2
         with:
-          name: firmware
-          path: .pio/build/**/firmware.bin
+          files: output/*.bin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
