@@ -3,7 +3,6 @@
 A compact **ESP32-based Flipper Zero alternative** with a display, buttons, buzzer, infrared transmitter, and CC1101 RF support.
 
 <img src="https://i.imgur.com/P2nhIcZ.jpeg" width="400">
-<img src="https://i.imgur.com/hySwcIf.png" width="400">
 
 ---
 
@@ -67,3 +66,6 @@ A compact **ESP32-based Flipper Zero alternative** with a display, buttons, buzz
 3. Change pinouts if needed, see [The global.hpp for pin defs](https://github.com/DevEclipse1/ESP-Pocket-Puter/blob/main/src/global.hpp)
 4. Change platformio.ini if needed (if you are using a different board)
 5. Upload!
+
+## 🔌 Wiring
+<img src="https://i.imgur.com/hySwcIf.png" width="400">
