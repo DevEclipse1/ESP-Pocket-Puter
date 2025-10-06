@@ -1,10 +1,8 @@
-name: PlatformIO Release Build
+name: PlatformIO Auto Release
 
 on:
   push:
-    tags:
-      - 'v*'
-  workflow_dispatch:
+    branches: [ main ]   # runs automatically on every push to main
 
 jobs:
   build:
@@ -13,6 +11,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -41,15 +41,29 @@ jobs:
       - name: Build firmware
         run: pio run
 
-      - name: Rename firmware
+      - name: Prepare firmware output
         run: |
           mkdir output
-          find .pio/build -name "firmware.bin" -exec bash -c 'cp "$0" "output/${0##*/}"' {} \;
+          find .pio/build -name "firmware.bin" -exec bash -c 'cp "$0" "output/${0%/*}.bin"' {} \;
           ls -lh output
 
-      - name: Create GitHub release and upload firmware
+      - name: Auto increment release tag
+        id: tag
+        run: |
+          latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "Latest tag: $latest_tag"
+          base=${latest_tag#v}
+          IFS='.' read -r major minor patch <<< "$base"
+          new_tag="v$major.$minor.$((patch+1))"
+          echo "new_tag=$new_tag" >> $GITHUB_ENV
+          echo "Next tag: $new_tag"
+
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ env.new_tag }}
+          name: "Auto Release ${{ env.new_tag }}"
+          generate_release_notes: true
           files: output/*.bin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
