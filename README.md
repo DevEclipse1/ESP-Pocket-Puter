@@ -69,3 +69,12 @@ A compact **ESP32-based Flipper Zero alternative** with a display, buttons, buzz
 
 ## 🔌 Wiring
 <img src="https://i.imgur.com/hySwcIf.png" width="400">
+
+## 🎗️ Contributing
+
+Please follow these code style rules when contributing:
+
+- **Variables:** use `snake_case` → example: `hello_world_variable`
+- **Global functions:** use `PascalCase` with all caps prefix if relevant → examples: `SPI_Test`, `RF_Yes`
+- **Class / struct functions:** use `PascalCase` → examples: `AddItem`, `PrintTesting`
+- **Comments:** do **not** add comments in the code
