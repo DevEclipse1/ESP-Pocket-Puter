@@ -14,9 +14,6 @@
 #define BUZZER_PIN 0
 #define IR_TX 21
 
-#define CC1101_SCK   4
-#define CC1101_MISO  5
-#define CC1101_MOSI  6
 #define CC1101_CS    10
 #define CC1101_GDO0  7
 
