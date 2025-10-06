@@ -2,7 +2,7 @@
 
 A compact **ESP32-based Flipper Zero alternative** with a display, buttons, buzzer, infrared transmitter, and CC1101 RF support.
 
-<img src="https://i.imgur.com/P2nhIcZ.jpeg" width="10vw">
+<img src="https://i.imgur.com/P2nhIcZ.jpeg" width="100">
 
 ---
 
