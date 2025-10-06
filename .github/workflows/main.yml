@@ -25,9 +25,12 @@ jobs:
       - name: Build firmware
         run: pio run
 
-      # Optional: If you have multiple environments (e.g., esp32, esp32-s3, etc.)
-      # you can specify one like:
-      # run: pio run -e esp32dev
-
       - name: Show firmware size
         run: pio run -t size
+
+      - name: Upload firmware artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: |
+            .pio/build/**/firmware.bin
