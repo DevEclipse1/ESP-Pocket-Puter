@@ -19,6 +19,22 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Cache PlatformIO
+        uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-platformio-${{ hashFiles('**/platformio.ini') }}
+          restore-keys: |
+            ${{ runner.os }}-platformio-
+
       - name: Install PlatformIO
         run: pip install platformio
 
@@ -32,5 +48,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: firmware
-          path: |
-            .pio/build/**/firmware.bin
+          path: .pio/build/**/firmware.bin
