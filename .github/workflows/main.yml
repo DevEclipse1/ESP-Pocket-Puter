@@ -2,7 +2,10 @@ name: PlatformIO Auto Release
 
 on:
   push:
-    branches: [ main ]   # runs automatically on every push to main
+    branches: [ main ]
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -19,33 +22,29 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Cache pip
+      - name: Cache dependencies
         uses: actions/cache@v4
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          path: |
+            ~/.cache/pip
+            ~/.platformio
+          key: ${{ runner.os }}-pio-${{ hashFiles('platformio.ini') }}
           restore-keys: |
-            ${{ runner.os }}-pip-
-
-      - name: Cache PlatformIO
-        uses: actions/cache@v4
-        with:
-          path: ~/.platformio
-          key: ${{ runner.os }}-platformio-${{ hashFiles('**/platformio.ini') }}
-          restore-keys: |
-            ${{ runner.os }}-platformio-
+            ${{ runner.os }}-pio-
 
       - name: Install PlatformIO
-        run: pip install platformio
+        run: |
+          pip install -U platformio
+          pio update
 
       - name: Build firmware
         run: pio run
 
       - name: Prepare firmware output
         run: |
-          mkdir output
-          find .pio/build -name "firmware.bin" -exec bash -c 'cp "$0" "output/${0%/*}.bin"' {} \;
-          ls -lh output
+          mkdir -p output
+          cp $(find .pio/build -name firmware.bin) output/ || echo "⚠️ No firmware files found"
+          ls -lh output || true
 
       - name: Auto increment release tag
         id: tag
