@@ -49,7 +49,7 @@ A compact **ESP32-based Flipper Zero alternative** with a display, buttons, buzz
 - Button inputs (Up, Ok, Down)  
 - Battery & Battery protection circuit (Recommended, for convenience)
 
-! Every pin definition is [Here](https://github.com/DevEclipse1/ESP-Pocket-Puter/blob/main/src/global.hpp)
+! Every pin definition is [Here](https://github.com/DevEclipse1/ESP-Pocket-Puter/blob/main/src/global.hpp) !
 
 ---
 
