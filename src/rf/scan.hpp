@@ -8,6 +8,8 @@
 #include "send.hpp"
 #include "../selection.hpp"
 
+#include "protocol_identifier.h"
+
 void RF_Scan() {
     float freq = RF_SelectFrequency();
 
@@ -16,7 +18,7 @@ void RF_Scan() {
     RF_ReceiveMode();
     pinMode(CC1101_GDO0, INPUT_PULLUP);
 
-    const int threshold = -60;
+    const int threshold = -75;
     const uint16_t max_sample = 8000;
     bool ready_to_replay = false;
     uint16_t sample = 0;
@@ -70,9 +72,13 @@ void RF_Scan() {
                 delay(50);
                 ledcWrite(0, 0);
 
+                const Protocol signal_protocol = RF_GetProtocol(sample, timings, start_level);
+                const Protocol* detected_protocol = RF_FindProtocol(RF_GetProtocol(sample, timings, start_level));
+                String protocol = detected_protocol ? String(RF_FindProtocolName(*detected_protocol)) : "Unknown";
+
                 uint16_t size = sample;
                 display.clearDisplay();
-                Display_PrintCentered("Captured signal:\n%d samples", size);
+                Display_PrintCentered("Captured signal:\n%d samples\n%s\nAvg. High %dus\nAvg. Low %dus\nD %dus", size, protocol, signal_protocol.t_high, signal_protocol.t_short, signal_protocol.t_delta);
                 display.display();
                 prev_time = time;
                 ready_to_replay = true;
@@ -92,7 +98,13 @@ void RF_Scan() {
 
             HaltTillRelease(BUTTON_RIGHT);
             display.clearDisplay();
-            Display_PrintCentered("Captured signal:\n%d samples", size);
+            const Protocol signal_protocol = RF_GetProtocol(sample, timings, start_level);
+            const Protocol* detected_protocol = RF_FindProtocol(RF_GetProtocol(sample, timings, start_level));
+            String protocol = detected_protocol ? String(RF_FindProtocolName(*detected_protocol)) : "Unknown";
+
+            display.clearDisplay();
+            Display_PrintCentered("Captured signal:\n%d samples\n%s\nBits: %d\nH %d : L %d", size, protocol, signal_protocol.t_high, signal_protocol.t_short, signal_protocol.min_bit_count);
+            display.display();
             display.display();
         }
 

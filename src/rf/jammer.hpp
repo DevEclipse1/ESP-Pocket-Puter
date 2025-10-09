@@ -19,10 +19,11 @@ void RF_Jammer()
 
     while (!ReadButton(BUTTON_CENTER))
     {
-        digitalWrite(CC1101_GDO0, HIGH);
-        delayMicroseconds(random(50, 800));
-        digitalWrite(CC1101_GDO0, LOW);
-        delayMicroseconds(random(50, 200));
+        uint16_t r = random(200, 1000);
+        GPIO.out_w1ts.val = (1 << CC1101_GDO0);
+        ets_delay_us(r);
+        GPIO.out_w1tc.val = (1 << CC1101_GDO0);
+        ets_delay_us(r);
     }
     noTone(CC1101_GDO0);
 
