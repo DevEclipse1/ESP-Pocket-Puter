@@ -24,6 +24,7 @@
 #include "rf/send.hpp"
 
 #include "headless.h"
+#include "settings.h"
 
 #include <LittleFS.h>
 
@@ -48,8 +49,10 @@ Menu* active_menu = nullptr;
 void setup() {
   Serial.begin(115200);
 
+  bool display_found = true;
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0X3C)) {
     Serial.println("SSD1306 allocation failed, force starting headless...");
+    display_found = false;
   }
 
   pinMode(BUZZER_PIN, OUTPUT);
@@ -102,13 +105,31 @@ void setup() {
     }
   }
 
-  Headless_Setup(true);
+  if (!display_found)
+  {
+    Headless_Setup();
+  }
+  else
+  {
+    auto config = ReadConfig("/config.cfg");
+
+    if (config.find("headless") == config.end())
+        config["headless"] = "0";
+
+    bool headless = config["headless"] == "1";
+
+    if (headless)
+    {
+      Headless_Setup();
+    }
+  }
 
   menu.AddItem(MenuItem("WiFi", &menu_wifi));
   menu.AddItem(MenuItem("Bluetooth", &menu_bluetooth));
   menu.AddItem(MenuItem("Infrared", &menu_infrared));
   menu.AddItem(MenuItem("Radio", &menu_rf));
   menu.AddItem(MenuItem("Sound", &menu_sound));
+  menu.AddItem(MenuItem("Settings", &menu_settings));
 
   menu_wifi.AddItem(MenuItem("Scan", WiFi_Scan));
   menu_wifi.AddItem(MenuItem("Beacon Spam", WiFi_BeaconSpam));
@@ -135,6 +156,21 @@ void setup() {
   menu_sound.AddItem(MenuItem("Beep", Beep_Callback));
   menu_sound.AddItem(MenuItem("Music", Music_Callback));
   menu_sound.AddItem(MenuItem("Piano", Piano_Callback));
+
+  menu_settings.AddItem(MenuItem("Headless", [](){
+      auto config = ReadConfig("/config.cfg");
+      bool current = config["headless"] == "1";
+      bool next = !current;
+      config["headless"] = next ? "1" : "0";
+      WriteConfig("/config.cfg", config);
+
+      display.clearDisplay();
+      Display_PrintCentered("Headless:\n%s", next ? "ON" : "OFF");
+      display.display();
+
+      delay(500);
+      ESP.restart();
+  }));
 
   menu.Revive(nullptr);
   active_menu = &menu;

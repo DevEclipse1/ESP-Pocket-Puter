@@ -19,10 +19,8 @@ void Headless_Thread(void *pvParameters)
     }
 }
 
-void Headless_Setup(bool on)
+void Headless_Setup()
 {
-    if (!on) return;
-
     WiFi.mode(WIFI_AP_STA);
     WiFi.softAP("Pocket Puter", "deveclipse");
     MDNS.begin("pocketputer");
