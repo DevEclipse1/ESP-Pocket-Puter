@@ -172,6 +172,19 @@ void BLE_SpamSendPayload(SPAM_PAYLOAD_TYPE type)
 
 void BLE_Spam()
 {
+    wifi_mode_t prev_mode = WIFI_MODE_NULL;
+    esp_err_t err = esp_wifi_get_mode(&prev_mode);
+
+    bool had_ap = (WiFi.getMode() == WIFI_AP || WiFi.getMode() == WIFI_AP_STA);
+
+    if (err == ESP_OK) {
+        esp_wifi_stop();
+        WiFi.mode(WIFI_MODE_NULL);
+        delay(200);
+    }
+
+    delay(200);
+
     BLE_Setup();
 
     String selected = SelectionMenu(SPAM_PAYLOAD_TYPE_NAMES, sizeof(SPAM_PAYLOAD_TYPE_NAMES) / sizeof(String));
@@ -208,6 +221,22 @@ void BLE_Spam()
     }
     advertising->stop();
     
+    BLEDevice::deinit(true);
+    delay(200);
+
+    if (err == ESP_OK) {
+        if (had_ap) {
+            WiFi.mode(WIFI_AP_STA);
+            WiFi.softAP("Pocket Puter", "deveclipse");
+        } else {
+            WiFi.mode(prev_mode);
+            if (prev_mode != WIFI_MODE_NULL) {
+                esp_wifi_start();
+            }
+        }
+        delay(200);
+    }
+
     HaltTillRelease(BUTTON_CENTER);
     display.clearDisplay();
     display.display();

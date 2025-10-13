@@ -18,7 +18,7 @@ void RF_Scan() {
     RF_ReceiveMode();
     pinMode(CC1101_GDO0, INPUT_PULLUP);
 
-    const int threshold = -75;
+    const int threshold = -85;
     const uint16_t max_sample = 8000;
     bool ready_to_replay = false;
     uint16_t sample = 0;

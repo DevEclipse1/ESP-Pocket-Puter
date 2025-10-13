@@ -72,6 +72,7 @@ void RF_SendTimings(uint16_t size, uint32_t* timings, bool start_level = false)
         *gdo0_port_out &= ~gdo0_bitmask;
 
     for (uint16_t i = 0; i < size; i++) {
+        if (timings[i] > 1000000) continue;
         delayMicroseconds(timings[i]);
         out_level = !out_level;
         if (out_level)

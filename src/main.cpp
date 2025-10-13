@@ -23,6 +23,8 @@
 #include "rf/scan.hpp"
 #include "rf/send.hpp"
 
+#include "headless.h"
+
 #include <LittleFS.h>
 
 Menu menu;
@@ -45,10 +47,9 @@ Menu* active_menu = nullptr;
 
 void setup() {
   Serial.begin(115200);
-  
+
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0X3C)) {
-    Serial.println("SSD1306 allocation failed");
-    for(;;);
+    Serial.println("SSD1306 allocation failed, force starting headless...");
   }
 
   pinMode(BUZZER_PIN, OUTPUT);
@@ -100,6 +101,8 @@ void setup() {
       delay(100);
     }
   }
+
+  Headless_Setup(true);
 
   menu.AddItem(MenuItem("WiFi", &menu_wifi));
   menu.AddItem(MenuItem("Bluetooth", &menu_bluetooth));

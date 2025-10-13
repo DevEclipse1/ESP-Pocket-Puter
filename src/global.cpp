@@ -3,23 +3,25 @@
 Adafruit_SSD1306 display(128, 64, &Wire, -1);
 IRsend irtx(IR_TX);
 
+VirtualButtons virtualButtons = { false, false, false };
+
 bool ReadButton(int P)
 {
-    return digitalRead(P) == LOW;
+    bool v = false;
+    if (P == BUTTON_LEFT) v = virtualButtons.left;
+    else if (P == BUTTON_CENTER) v = virtualButtons.center;
+    else if (P == BUTTON_RIGHT) v = virtualButtons.right;
+    return (digitalRead(P) == LOW) || v;
 }
 
 bool ReadButtonWait(int P)
 {
     bool pressed = false;
-    if (ReadButton(P)) {
-        pressed = true;
-    }
-
+    if (ReadButton(P)) pressed = true;
     if (pressed) {
         while (ReadButton(P)) delay(10);
         return true;
     }
-
     return false;
 }
 

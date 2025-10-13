@@ -163,7 +163,6 @@ void WiFi_Init()
 
     esp_wifi_set_mode(WIFI_MODE_STA);
     esp_wifi_start();
-
     esp_wifi_set_channel(1, WIFI_SECOND_CHAN_NONE);
 
     initialized = true;
