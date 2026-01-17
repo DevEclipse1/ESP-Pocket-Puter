@@ -44,6 +44,8 @@ jobs:
         run: |
           mkdir -p output
           cp $(find .pio/build -name firmware.bin) output/ || echo "⚠️ No firmware files found"
+          cp $(find .pio/build -name bootloader.bin) output/ || echo "⚠️ No bootloader files found"
+          cp $(find .pio/build -name partitions.bin) output/ || echo "⚠️ No partition files found"
           ls -lh output || true
 
       - name: Auto increment release tag
